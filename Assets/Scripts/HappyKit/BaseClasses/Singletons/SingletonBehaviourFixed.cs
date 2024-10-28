@@ -1,12 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HappyKit
 {
     /// <summary>
-    /// If another instance of this is created, the old instance is destroyed.
+    /// If another instance of this is created, the new instance is destroyed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+    public class SingletonBehaviourFixed<T> : MonoBehaviour where T : MonoBehaviour
     {
         public static T Instance
         {
@@ -28,19 +30,23 @@ namespace HappyKit
 
         protected virtual void Awake()
         {
-            if (instance != null)
+            if (instance == null)
             {
-                Destroy(Instance.gameObject);
+                instance = GetComponent<T>();
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
             }
 
-            instance = GetComponent<T>();
-            DontDestroyOnLoad(gameObject);
         }
+
 
         /// <summary>
         /// Calling this is used to instantiate the prefab from resources folder.
         /// This is used when you want to create the singleton at a desired moment.
-        /// Instance prior to this will get destroyed.
+        /// This will fail if there is already an instance of T.
         /// </summary>
         /// <param name="prefabPathInResources">Path of the prefab inside Resources directory that contains this component</param>
         /// <returns></returns>
@@ -52,14 +58,15 @@ namespace HappyKit
 
             if (instance != null)
             {
-                Destroy(Instance.gameObject);
+                Debug.LogWarningFormat("Failed InstantiateInstance on {0} becuase instance already exists.", typeof(T).Name);
+                return instance;
             }
             GameObject ob = UnityEngine.Object.Instantiate(resourceOb) as GameObject;
             UnityEngine.Object.DontDestroyOnLoad(ob);
             instance = ob.GetComponent<T>();
             if (instance == null)
                 Debug.LogWarningFormat("Resource from {0} doesn't have component {1}.", prefabPathInResources, typeof(T).Name);
-
+            
             return instance;
         }
     }
