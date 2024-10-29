@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using HappyKit;
 
-namespace RTD.Ingame
+namespace HappyKit
 {
     public class ShortcutGroupWindow : EditorWindow
     {
