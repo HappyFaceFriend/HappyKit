@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HappyKit;
 
 namespace GameBootStrapperDemo
 {
-    
-    public class GameBootStrapper : HappyTools.GameBootstrapper
+    public class GameBootStrapper : GameBootstrapper
     {
         [SerializeField] LogManager _logManager;
         public override void InitGame()

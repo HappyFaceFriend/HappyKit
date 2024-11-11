@@ -6,6 +6,10 @@ using System.IO;
 
 namespace HappyKit
 {
+    /// <summary>
+    /// Calling OnGUI of this object inside OnGUI of an editor window will draw a shortcut group view.
+    /// Call to Initialize() is mandatory.
+    /// </summary>
     public class ShortcutEditorGUI
     {
         ShortcutGroupData _currentShortcutGroupData;
@@ -193,11 +197,15 @@ namespace HappyKit
         {
             EditWindow window = ScriptableObject.CreateInstance<EditWindow>();
             window.titleContent = new GUIContent("Edit shortcut");
-            window.Init(shortcut, _currentShortcutGroupData);
+            window.Initialize(shortcut, _currentShortcutGroupData);
             window.ShowUtility();
 
         }
 
+        /// <summary>
+        /// Editor window that is shown when modifying a shortcut.
+        /// Call to Initialize() is mandatory.
+        /// </summary>
         public class EditWindow : EditorWindow
         {
             string _newName = "";
@@ -245,16 +253,21 @@ namespace HappyKit
                 }
 
             }
-            public void Init(Shortcut shortcut, ShortcutGroupData groupData)
+            public void Initialize(Shortcut shortcut, ShortcutGroupData groupData)
             {
+                Debug.Assert(shortcut != null);
+                Debug.Assert(groupData != null);
+
                 _shortcutGroupData = groupData;
                 _shortcut = shortcut;
                 _newName = shortcut.Name;
                 _newPath = shortcut.Path;
                 _focusTextField = true;
             }
+            
             private void Update()
             {
+                // Always get focus
                 if (!focusedWindow)
                 {
                     Focus();
@@ -262,20 +275,9 @@ namespace HappyKit
             }
             private void OnLostFocus()
             {
+                // Always get focus
                 Focus();
             }
-        }
-        static int CountLeadingSpaces(string input)
-        {
-            int spaceCount = 0;
-            foreach (char c in input)
-            {
-                if (c == ' ')
-                    spaceCount++;
-                else
-                    break;
-            }
-            return spaceCount;
         }
     }
 }
